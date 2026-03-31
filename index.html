@@ -2,15 +2,17 @@ from flask import Flask, render_template_string
 
 app = Flask(__name__)
 
-# === 完整的 HTML 模板 (已修复结构并加入防护代码) ===
-HTML_TEMPLATE = """
+# === 修复后的完整 HTML 模板 (包含防 F12 代码) ===
+# 注意：这里必须使用单引号 ''' 或者双引号 """，但不能和 HTML 里的引号冲突
+# 我这里用的是三引号 '''，所以在 HTML 里尽量用双引号 "
+HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的游戏大厅</title>
-    
+
     <!-- --- 样式 --- -->
     <style>
         body {
@@ -32,6 +34,7 @@ HTML_TEMPLATE = """
             margin: 0;
             color: #e94560;
             text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .game-container {
@@ -47,7 +50,7 @@ HTML_TEMPLATE = """
             background-color: #0f3460;
             border-radius: 15px;
             overflow: hidden;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             text-decoration: none;
             color: inherit;
             display: block;
@@ -55,6 +58,7 @@ HTML_TEMPLATE = """
 
         .game-card:hover {
             transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(233, 69, 96, 0.4);
         }
 
         .game-image {
@@ -84,28 +88,32 @@ HTML_TEMPLATE = """
             background-color: #e94560;
             padding: 8px 20px;
             border-radius: 20px;
+            font-size: 0.9em;
             font-weight: bold;
         }
     </style>
 
-    <!-- 💡 核心修改：这里加入了防 F12 和防右键的代码 -->
+    <!-- 💡 核心修复：加入防 F12 和防右键代码 -->
     <script>
-        // 1. 禁用 F12、Ctrl+Shift+I、Ctrl+Shift+J
+        // 1. 禁用 F12
+        document.onkeydown = function(e) {
+            if (e.keyCode == 123) {
+                return false;
+            }
+        };
+
+        // 2. 禁用右键
+        document.oncontextmenu = function(e) {
+            return false;
+        };
+
+        // 3. (可选) 禁用 Ctrl+Shift+I
         document.addEventListener('keydown', function(e) {
-            if (
-                e.key === 'F12' || 
-                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J'))
-            ) {
+            if (e.ctrlKey && e.shiftKey && e.key === 'i') {
                 e.preventDefault();
             }
         });
-
-        // 2. 禁用右键菜单
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
     </script>
-
 </head>
 <body>
 
@@ -114,7 +122,6 @@ HTML_TEMPLATE = """
     </header>
 
     <main class="game-container">
-        <!-- 游戏卡片 1 -->
         <a href="https://alan11120967.github.io/my-site/" class="game-card" target="_blank">
             <img src="Pic/OIP-C.webp" alt="游戏封面" class="game-image">
             <div class="game-info">
@@ -123,8 +130,6 @@ HTML_TEMPLATE = """
                 <span class="play-btn">开始游戏</span>
             </div>
         </a>
-
-        <!-- 游戏卡片 2 -->
         <a href="https://alan11120967.github.io/gun/" class="game-card" target="_blank">
             <img src="Pic/gun.jpg" alt="游戏封面" class="game-image">
             <div class="game-info">
@@ -137,12 +142,13 @@ HTML_TEMPLATE = """
 
 </body>
 </html>
-"""
+'''
 
-# === 路由 ===
+# === Flask 路由 ===
 @app.route('/')
 def index():
     return render_template_string(HTML_TEMPLATE)
 
+# 运行服务器
 if __name__ == '__main__':
-    app.run(debug=False) # 生产环境建议设为 False
+    app.run(debug=False)  # 建议设为 False，生产环境更安全
