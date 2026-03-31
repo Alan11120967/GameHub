@@ -1,25 +1,8 @@
-from flask import Flask, request, jsonify, render_template_string
-import random
+from flask import Flask, render_template_string
 
 app = Flask(__name__)
 
-# === 核心逻辑：防止F12和右键 (Python部分仅作为示例，核心在HTML) ===
-# 注意：Python后端无法直接防止前端F12，主要逻辑在下面的HTML/JS中
-
-# ... (保留你原有的其他路由，如/api/question等) ...
-
-# === 路由：游戏大厅主页 ===
-@app.route('/')
-def index():
-    # 这里是包含防F12代码的HTML
-    return render_template_string(HTML_TEMPLATE)
-
-# 如果你有其他API接口，保持原样
-@app.route('/api/test', methods=['GET'])
-def test():
-    return jsonify({"message": "Protected"})
-
-# === 前端页面 (包含防F12/防查看源码逻辑) ===
+# === 完整的 HTML 模板 (已修复结构并加入防护代码) ===
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -28,44 +11,17 @@ HTML_TEMPLATE = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的游戏大厅</title>
     
-    <!-- 💡 第一层防护：禁用快捷键与右键 -->
-    <script>
-        // 1. 禁用 F12
-        document.onkeydown = function (e) {
-            if (e.key === 'F12') {
-                alert('开发者模式已禁用');
-                return false;
-            }
-            // 2. 禁用 Ctrl+Shift+I (检查)
-            if (e.ctrlKey && e.shiftKey && e.key === 'I') return false;
-            // 3. 禁用 Ctrl+U (查看源码)
-            if (e.ctrlKey && e.key === 'u') return false;
-            // 4. 禁用 Ctrl+S (保存网页)
-            if (e.ctrlKey && e.key === 's') return false;
-        };
-
-        // 5. 禁用右键菜单
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            return false;
-        });
-
-        // 6. 禁用选择文本 (防止复制源码)
-        document.onselectstart = function() { return false; };
-    </script>
-
+    <!-- --- 样式 --- -->
     <style>
-        /* --- 基础样式设置 --- */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1a1a2e; /* 深色背景 */
+            background-color: #1a1a2e;
             color: #ffffff;
             margin: 0;
             padding: 0;
             text-align: center;
         }
 
-        /* --- 头部样式 --- */
         header {
             background-color: #16213e;
             padding: 20px;
@@ -74,15 +30,12 @@ HTML_TEMPLATE = """
 
         header h1 {
             margin: 0;
-            color: #e94560; /* 强调色 */
+            color: #e94560;
             text-transform: uppercase;
-            letter-spacing: 2px;
         }
 
-        /* --- 游戏列表容器 (Grid布局) --- */
         .game-container {
             display: grid;
-            /* 响应式设计：自动填充，每个卡片最小宽度250px */
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 30px;
             padding: 40px;
@@ -90,32 +43,26 @@ HTML_TEMPLATE = """
             margin: 0 auto;
         }
 
-        /* --- 单个游戏卡片样式 --- */
         .game-card {
             background-color: #0f3460;
             border-radius: 15px;
             overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-decoration: none; /* 去掉链接下划线 */
+            transition: transform 0.3s ease;
+            text-decoration: none;
             color: inherit;
             display: block;
         }
 
-        /* 鼠标悬停效果 */
         .game-card:hover {
-            transform: translateY(-10px); /* 向上浮动 */
-            box-shadow: 0 10px 20px rgba(233, 69, 96, 0.4); /* 发光效果 */
+            transform: translateY(-10px);
         }
 
-        /* --- 游戏封面图 --- */
         .game-image {
             width: 100%;
             height: 150px;
-            object-fit: cover; /* 保证图片比例不被拉伸 */
-            background-color: #ddd; /* 图片加载前的占位色 */
+            object-fit: cover;
         }
 
-        /* --- 游戏信息区域 --- */
         .game-info {
             padding: 20px;
         }
@@ -137,10 +84,28 @@ HTML_TEMPLATE = """
             background-color: #e94560;
             padding: 8px 20px;
             border-radius: 20px;
-            font-size: 0.9em;
             font-weight: bold;
         }
     </style>
+
+    <!-- 💡 核心修改：这里加入了防 F12 和防右键的代码 -->
+    <script>
+        // 1. 禁用 F12、Ctrl+Shift+I、Ctrl+Shift+J
+        document.addEventListener('keydown', function(e) {
+            if (
+                e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J'))
+            ) {
+                e.preventDefault();
+            }
+        });
+
+        // 2. 禁用右键菜单
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+    </script>
+
 </head>
 <body>
 
@@ -149,7 +114,6 @@ HTML_TEMPLATE = """
     </header>
 
     <main class="game-container">
-
         <!-- 游戏卡片 1 -->
         <a href="https://alan11120967.github.io/my-site/" class="game-card" target="_blank">
             <img src="Pic/OIP-C.webp" alt="游戏封面" class="game-image">
@@ -169,33 +133,16 @@ HTML_TEMPLATE = """
                 <span class="play-btn">开始游戏</span>
             </div>
         </a>
-
     </main>
-
-    <!-- 💡 第二层防护：反调试陷阱 (进阶) -->
-    <!-- 这段代码会尝试检测控制台是否打开，如果打开则干扰页面 -->
-    <script>
-        // 反调试：通过重写 toString 来干扰检测
-        (function() {
-            let re = /./;
-            re.toString = function() {
-                // 触发断点
-                debugger;
-                // 或者执行干扰逻辑
-                document.body.innerHTML = '检测到非法调试，页面已锁定。';
-                return '';
-            };
-            setInterval(() => {
-                // 尝试触发 toString
-                ({'': re} + '');
-            }, 2000);
-        })();
-    </script>
 
 </body>
 </html>
 """
 
+# === 路由 ===
+@app.route('/')
+def index():
+    return render_template_string(HTML_TEMPLATE)
+
 if __name__ == '__main__':
-    print("🚀 服务器启动中... 访问 http://127.0.0.1:5000")
-    app.run(debug=False) # 生产环境请关闭 debug=True
+    app.run(debug=False) # 生产环境建议设为 False
