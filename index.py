@@ -2,9 +2,6 @@ from flask import Flask, render_template_string
 
 app = Flask(__name__)
 
-# === 修复后的完整 HTML 模板 (包含防 F12/防右键代码) ===
-# 关键点：这里使用了 ''' 三单引号，这样 HTML 内部就可以自由使用双引号 "
-# 关键点：HTML 结构必须完整闭合，否则后面的 Python 代码会跑出来
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html lang="zh-CN">
