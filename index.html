@@ -5,153 +5,150 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的游戏大厅</title>
     <style>
-        /* --- 基础样式设置 --- */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1a1a2e; /* 深色背景 */
-            color: #ffffff;
             margin: 0;
             padding: 0;
-            text-align: center;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
 
-
-        /* --- 头部样式 --- */
         header {
-            background-color: #16213e;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            width: 100%;
+            padding: 20px 0;
+            background-color: #2d2d2d;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
 
-
-        header h1 {
+        h1 {
             margin: 0;
-            color: #e94560; /* 强调色 */
+            font-size: 2.5rem;
+            color: #00ff88;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
 
-
-        /* --- 游戏列表容器 (Grid布局) --- */
-        .game-container {
-            display: grid;
-            /* 响应式设计：自动填充，每个卡片最小宽度250px */
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 30px;
-            padding: 40px;
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 40px 20px;
             max-width: 1200px;
-            margin: 0 auto;
         }
 
-
-        /* --- 单个游戏卡片样式 --- */
         .game-card {
-            background-color: #0f3460;
-            border-radius: 15px;
-            overflow: hidden;
+            background-color: #2d2d2d;
+            border-radius: 10px;
+            width: 250px;
+            padding: 20px;
+            text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-decoration: none; /* 去掉链接下划线 */
+            cursor: pointer;
+            text-decoration: none;
             color: inherit;
+            border: 1px solid #444;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+            border-color: #00ff88;
+        }
+
+        .game-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
             display: block;
         }
 
-
-        /* 鼠标悬停效果 */
-        .game-card:hover {
-            transform: translateY(-10px); /* 向上浮动 */
-            box-shadow: 0 10px 20px rgba(233, 69, 96, 0.4); /* 发光效果 */
-        }
-
-
-        /* --- 游戏封面图 --- */
-        .game-image {
-            width: 100%;
-            height: 150px;
-            object-fit: cover; /* 保证图片比例不被拉伸 */
-            background-color: #ddd; /* 图片加载前的占位色 */
-        }
-
-
-        /* --- 游戏信息区域 --- */
-        .game-info {
-            padding: 20px;
-        }
-
-
         .game-title {
-            font-size: 1.2em;
-            margin: 10px 0;
+            font-size: 1.2rem;
             font-weight: bold;
+            margin-bottom: 10px;
+            color: #00ff88;
         }
-
 
         .game-desc {
-            font-size: 0.9em;
-            color: #a0a0a0;
-            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: #aaa;
+            line-height: 1.5;
         }
 
-
-        .play-btn {
-            display: inline-block;
-            background-color: #e94560;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: bold;
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            color: #777;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
 
-
     <header>
         <h1>游戏大厅</h1>
     </header>
 
-
-    <main class="game-container">
-
-
-        <!-- ========================================== -->
-        <!-- 游戏卡片 1 开始 -->
-        <!-- ========================================== -->
-
-
-        <!-- 
-           👇 重点在这里 👇 
-           href="这里填写游戏的网址" 
-           如果是本地文件，写文件名 (例如 game1.html)
-           如果是外部网站，写完整网址 (例如 https://...)
-        -->
-        <a href="https://alan11120967.github.io/my-site/" class="game-card" target="_blank">
-            <img src="Pic/OIP-C.webp" alt="游戏封面" class="game-image">
-
-
-            <div class="game-info">
-                <div class="game-title">逃离设施</div>
-                <div class="game-desc">类似SCP的CB。</div>
-                <span class="play-btn">开始游戏</span>
-            </div>
-        </a>
-        <a href="https://alan11120967.github.io/gun/" class="game-card" target="_blank">
-            <img src="Pic/gun.jpg" alt="游戏封面" class="game-image">
-
-
-            <div class="game-info">
-                <div class="game-title">轮盘赌:生与死</div>
-                <div class="game-desc">用把左轮对战。</div>
-                <span class="play-btn">开始游戏</span>
-            </div>
+    <div class="container">
+        <!-- 游戏卡片 1 -->
+        <a href="https://alan11120967.github.io/gun/" class="game-card">
+            <span class="game-icon">🔫</span>
+            <div class="game-title">射击游戏</div>
+            <div class="game-desc">体验刺激的射击对战，考验你的反应速度！</div>
         </a>
 
+        <!-- 游戏卡片 2 (示例) -->
+        <a href="#" class="game-card">
+            <span class="game-icon">🏎️</span>
+            <div class="game-title">赛车竞速</div>
+            <div class="game-desc">极速狂飙，享受风驰电掣的快感！</div>
+        </a>
 
+        <!-- 游戏卡片 3 (示例) -->
+        <a href="#" class="game-card">
+            <span class="game-icon">🧩</span>
+            <div class="game-title">益智解谜</div>
+            <div class="game-desc">烧脑挑战，锻炼你的逻辑思维。</div>
+        </a>
+    </div>
 
+    <footer>
+        &copy; 2026 游戏大厅 版权所有
+    </footer>
 
+    <!-- 防 F12 和 防右键 保护脚本 -->
+    <script>
+        // 1. 屏蔽 F12 和 Ctrl+Shift+I/J/C 组合键
+        document.onkeydown = function(e) {
+            // 123 是 F12 的键码
+            if (e.keyCode == 123) {
+                return false;
+            }
+            // Ctrl+Shift+I (检查元素), Ctrl+Shift+J (控制台), Ctrl+Shift+C (选择元素)
+            if (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) {
+                return false;
+            }
+            // Ctrl+U (查看源代码)
+            if (e.ctrlKey && e.keyCode == 85) {
+                return false;
+            }
+        };
 
+        // 2. 禁用右键菜单
+        document.oncontextmenu = function() {
+            return false;
+        };
 
-    </main>
-
+        // 3. 禁用网页内容选中 (防止复制文字)
+        document.onselectstart = function() {
+            return false;
+        };
+    </script>
 
 </body>
 </html>
