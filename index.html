@@ -1,9 +1,59 @@
+from flask import Flask, request, jsonify, render_template_string
+import random
+
+app = Flask(__name__)
+
+# === 核心逻辑：防止F12和右键 (Python部分仅作为示例，核心在HTML) ===
+# 注意：Python后端无法直接防止前端F12，主要逻辑在下面的HTML/JS中
+
+# ... (保留你原有的其他路由，如/api/question等) ...
+
+# === 路由：游戏大厅主页 ===
+@app.route('/')
+def index():
+    # 这里是包含防F12代码的HTML
+    return render_template_string(HTML_TEMPLATE)
+
+# 如果你有其他API接口，保持原样
+@app.route('/api/test', methods=['GET'])
+def test():
+    return jsonify({"message": "Protected"})
+
+# === 前端页面 (包含防F12/防查看源码逻辑) ===
+HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的游戏大厅</title>
+    
+    <!-- 💡 第一层防护：禁用快捷键与右键 -->
+    <script>
+        // 1. 禁用 F12
+        document.onkeydown = function (e) {
+            if (e.key === 'F12') {
+                alert('开发者模式已禁用');
+                return false;
+            }
+            // 2. 禁用 Ctrl+Shift+I (检查)
+            if (e.ctrlKey && e.shiftKey && e.key === 'I') return false;
+            // 3. 禁用 Ctrl+U (查看源码)
+            if (e.ctrlKey && e.key === 'u') return false;
+            // 4. 禁用 Ctrl+S (保存网页)
+            if (e.ctrlKey && e.key === 's') return false;
+        };
+
+        // 5. 禁用右键菜单
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // 6. 禁用选择文本 (防止复制源码)
+        document.onselectstart = function() { return false; };
+    </script>
+
     <style>
         /* --- 基础样式设置 --- */
         body {
@@ -100,28 +150,19 @@
 
     <main class="game-container">
 
-        <!-- ========================================== -->
-        <!-- 游戏卡片 1 开始 -->
-        <!-- ========================================== -->
-        
-        <!-- 
-           👇 重点在这里 👇 
-           href="这里填写游戏的网址" 
-           如果是本地文件，写文件名 (例如 game1.html)
-           如果是外部网站，写完整网址 (例如 https://...)
-        -->
+        <!-- 游戏卡片 1 -->
         <a href="https://alan11120967.github.io/my-site/" class="game-card" target="_blank">
             <img src="Pic/OIP-C.webp" alt="游戏封面" class="game-image">
-            
             <div class="game-info">
                 <div class="game-title">逃离设施</div>
                 <div class="game-desc">类似SCP的CB。</div>
                 <span class="play-btn">开始游戏</span>
             </div>
         </a>
+
+        <!-- 游戏卡片 2 -->
         <a href="https://alan11120967.github.io/gun/" class="game-card" target="_blank">
             <img src="Pic/gun.jpg" alt="游戏封面" class="game-image">
-            
             <div class="game-info">
                 <div class="game-title">轮盘赌:生与死</div>
                 <div class="game-desc">用把左轮对战。</div>
@@ -129,9 +170,32 @@
             </div>
         </a>
 
-
-
     </main>
+
+    <!-- 💡 第二层防护：反调试陷阱 (进阶) -->
+    <!-- 这段代码会尝试检测控制台是否打开，如果打开则干扰页面 -->
+    <script>
+        // 反调试：通过重写 toString 来干扰检测
+        (function() {
+            let re = /./;
+            re.toString = function() {
+                // 触发断点
+                debugger;
+                // 或者执行干扰逻辑
+                document.body.innerHTML = '检测到非法调试，页面已锁定。';
+                return '';
+            };
+            setInterval(() => {
+                // 尝试触发 toString
+                ({'': re} + '');
+            }, 2000);
+        })();
+    </script>
 
 </body>
 </html>
+"""
+
+if __name__ == '__main__':
+    print("🚀 服务器启动中... 访问 http://127.0.0.1:5000")
+    app.run(debug=False) # 生产环境请关闭 debug=True
