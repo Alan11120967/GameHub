@@ -1,4 +1,4 @@
-from flask import Flask, render_template_string
+from flask import Flask, render_template_string, url_for
 
 app = Flask(__name__)
 
@@ -10,7 +10,6 @@ HTML_TEMPLATE = '''
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的游戏大厅</title>
 
-    <!-- --- 样式 --- -->
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -58,10 +57,12 @@ HTML_TEMPLATE = '''
             box-shadow: 0 10px 20px rgba(233, 69, 96, 0.4);
         }
 
+        /* 修复图片样式：确保高度固定 */
         .game-image {
             width: 100%;
             height: 150px;
             object-fit: cover;
+            background-color: #ddd; /* 防止图片加载失败时布局塌陷 */
         }
 
         .game-info {
@@ -87,23 +88,22 @@ HTML_TEMPLATE = '''
             border-radius: 20px;
             font-size: 0.9em;
             font-weight: bold;
+            /* 移除了 pointer-events: none; 因为这会让链接无法点击 */
         }
     </style>
 
-    <!-- 🔒 第一层防护：防 F12 和 右键 -->
     <script>
-        // 1. 禁用 F12 和 Ctrl+Shift+I
+        // 提示：这段JS仅用于前端体验，无法真正阻止懂技术的用户访问
         document.addEventListener('keydown', function(e) {
             if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
                 e.preventDefault();
-                alert("开发者工具已禁用");
+                console.log("开发者工具已禁用（仅前端提示）");
             }
         });
 
-        // 2. 禁用右键菜单
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
-            alert("右键功能已禁用");
+            console.log("右键功能已禁用");
         });
     </script>
 </head>
@@ -116,7 +116,8 @@ HTML_TEMPLATE = '''
     <main class="game-container">
         <!-- 游戏卡片 1 -->
         <a href="https://alan11120967.github.io/my-site/" class="game-card" target="_blank">
-            <img src="Pic/OIP-C.webp" alt="游戏封面" class="game-image">
+            <!-- 修复：使用网络图片确保加载成功，或者请将图片放入 static 文件夹并使用 url_for -->
+            <img src="https://via.placeholder.com/300x150/333/fff?text=SCP+Game" alt="游戏封面" class="game-image">
             <div class="game-info">
                 <div class="game-title">逃离设施</div>
                 <div class="game-desc">类似SCP的CB。</div>
@@ -126,7 +127,7 @@ HTML_TEMPLATE = '''
 
         <!-- 游戏卡片 2 -->
         <a href="https://alan11120967.github.io/gun/" class="game-card" target="_blank">
-            <img src="Pic/gun.jpg" alt="游戏封面" class="game-image">
+            <img src="https://via.placeholder.com/300x150/333/fff?text=Gun+Game" alt="游戏封面" class="game-image">
             <div class="game-info">
                 <div class="game-title">轮盘赌:生与死</div>
                 <div class="game-desc">用把左轮对战。</div>
@@ -139,11 +140,11 @@ HTML_TEMPLATE = '''
 </html>
 '''
 
-# === 路由逻辑 ===
 @app.route('/')
 def index():
+    # render_template_string 可以直接渲染字符串
     return render_template_string(HTML_TEMPLATE)
 
-# 运行服务器
 if __name__ == '__main__':
-    app.run(debug=False)
+    # 关闭 Debug 模式以防止代码泄露
+    app.run(debug=False, host='0.0.0.0', port=5000)
