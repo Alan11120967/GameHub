@@ -2,9 +2,9 @@ from flask import Flask, render_template_string
 
 app = Flask(__name__)
 
-# === 修复后的完整 HTML 模板 (包含防 F12 代码) ===
-# 注意：这里必须使用单引号 ''' 或者双引号 """，但不能和 HTML 里的引号冲突
-# 我这里用的是三引号 '''，所以在 HTML 里尽量用双引号 "
+# === 修复后的完整 HTML 模板 (包含防 F12/防右键代码) ===
+# 关键点：这里使用了 ''' 三单引号，这样 HTML 内部就可以自由使用双引号 "
+# 关键点：HTML 结构必须完整闭合，否则后面的 Python 代码会跑出来
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -93,25 +93,20 @@ HTML_TEMPLATE = '''
         }
     </style>
 
-    <!-- 💡 核心修复：加入防 F12 和防右键代码 -->
+    <!-- 🔒 第一层防护：防 F12 和 右键 -->
     <script>
-        // 1. 禁用 F12
-        document.onkeydown = function(e) {
-            if (e.keyCode == 123) {
-                return false;
-            }
-        };
-
-        // 2. 禁用右键
-        document.oncontextmenu = function(e) {
-            return false;
-        };
-
-        // 3. (可选) 禁用 Ctrl+Shift+I
+        // 1. 禁用 F12 和 Ctrl+Shift+I
         document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.shiftKey && e.key === 'i') {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
                 e.preventDefault();
+                alert("开发者工具已禁用");
             }
+        });
+
+        // 2. 禁用右键菜单
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            alert("右键功能已禁用");
         });
     </script>
 </head>
@@ -122,6 +117,7 @@ HTML_TEMPLATE = '''
     </header>
 
     <main class="game-container">
+        <!-- 游戏卡片 1 -->
         <a href="https://alan11120967.github.io/my-site/" class="game-card" target="_blank">
             <img src="Pic/OIP-C.webp" alt="游戏封面" class="game-image">
             <div class="game-info">
@@ -130,6 +126,8 @@ HTML_TEMPLATE = '''
                 <span class="play-btn">开始游戏</span>
             </div>
         </a>
+
+        <!-- 游戏卡片 2 -->
         <a href="https://alan11120967.github.io/gun/" class="game-card" target="_blank">
             <img src="Pic/gun.jpg" alt="游戏封面" class="game-image">
             <div class="game-info">
@@ -144,11 +142,11 @@ HTML_TEMPLATE = '''
 </html>
 '''
 
-# === Flask 路由 ===
+# === 路由逻辑 ===
 @app.route('/')
 def index():
     return render_template_string(HTML_TEMPLATE)
 
 # 运行服务器
 if __name__ == '__main__':
-    app.run(debug=False)  # 建议设为 False，生产环境更安全
+    app.run(debug=False)
